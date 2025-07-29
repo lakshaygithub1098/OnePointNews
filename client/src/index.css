@@ -1,0 +1,29 @@
+@import "tailwindcss";
+@import "keen-slider/keen-slider.min.css";
+
+.dark:root {
+  --color-background: #0f0f0f;
+  --color-surface: #1a1a1a;
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #b3b3b3;
+  --color-accent: #3b82f6;
+  --color-border: #2e2e2e;
+  --color-danger: #ff3b3b;
+}
+
+:root {
+  --color-background: #fff;
+  --color-surface: #fff;
+  --color-text-primary: #111;
+  --color-text-secondary: #333;
+  --color-accent: #2563eb;
+  --color-border: #e5e7eb;
+  --color-danger: #dc2626;
+}
+
+body {
+  background-color: var(--color-background, #fff);
+  color: var(--color-text-primary, #000);
+  font-family: 'Inter', sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
