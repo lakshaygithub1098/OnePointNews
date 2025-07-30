@@ -1,14 +1,13 @@
-
 import React, { useEffect, useState } from "react";
 
 const NewsFeed = ({ selectedCategory }) => {
   const [newsPosts, setNewsFeed] = useState([]);
-const [stats, setStats] = useState({}); 
+  const [stats, setStats] = useState({});
 
   useEffect(() => {
     if (!selectedCategory) return;
 
-    fetch(`http://localhost:5000/api/news/${selectedCategory}`)
+    fetch(`https://onepointnews-server.onrender.com/api/news/${selectedCategory}`)
       .then((res) => res.json())
       .then((data) => {
         const posts = data.feed || [];
@@ -16,7 +15,7 @@ const [stats, setStats] = useState({});
 
         const postIds = posts.map((p) => p._id);
 
-        fetch("http://localhost:5000/api/interactions/stats", {
+        fetch("https://onepointnews-server.onrender.com/api/interactions/stats", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ postIds }),
@@ -34,7 +33,7 @@ const [stats, setStats] = useState({});
   }, [selectedCategory]);
 
   const handleView = (postId) => {
-    fetch(`http://localhost:5000/api/interactions/view/${postId}`, {
+    fetch(`https://onepointnews-server.onrender.com/api/interactions/view/${postId}`, {
       method: "POST",
     })
       .then((res) => res.json())
@@ -44,18 +43,17 @@ const [stats, setStats] = useState({});
       .catch((err) => {
         console.error("Error increasing views:", err);
       });
-      
   };
 
   const handleLike = async (postId) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/interactions/like/${postId}`, {
+      const res = await fetch(`https://onepointnews-server.onrender.com/api/interactions/like/${postId}`, {
         method: "POST",
       });
       const { likes } = await res.json();
       setStats((prev) => ({ ...prev, [postId]: { ...prev[postId], likes } }));
     } catch (err) {
-      console.error(" Error increasing likes:", err);
+      console.error("Error increasing likes:", err);
     }
   };
 
