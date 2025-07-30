@@ -3,6 +3,11 @@ import React, { useEffect, useState } from "react";
 const NewsFeed = ({ selectedCategory }) => {
   const [newsPosts, setNewsFeed] = useState([]);
   const [stats, setStats] = useState({});
+  const [likedPosts, setLikedPosts] = useState(() => {
+    // Initialize from localStorage
+    const saved = localStorage.getItem('likedPosts');
+    return saved ? JSON.parse(saved) : {};
+  });
 
   useEffect(() => {
     if (!selectedCategory) return;
@@ -13,48 +18,44 @@ const NewsFeed = ({ selectedCategory }) => {
         const posts = data.feed || [];
         setNewsFeed(posts);
 
-        const postIds = posts.map((p) => p._id);
-
-        fetch("https://onepointnews-server.onrender.com/api/interactions/stats", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ postIds }),
-        })
-          .then((res) => res.json())
-          .then((statsData) => {
-            const newStats = {};
-            postIds.forEach((id) => {
-              newStats[id] = statsData[id] || { likes: 0, views: 0 };
-            });
-            setStats(newStats);
-          });
+        // Initialize stats for each post
+        const initialStats = {};
+        posts.forEach((post) => {
+          initialStats[post._id] = { likes: 0, views: 0 };
+        });
+        setStats(initialStats);
       })
       .catch((err) => console.error("❌ Error loading feed:", err));
   }, [selectedCategory]);
 
   const handleView = (postId) => {
-    fetch(`https://onepointnews-server.onrender.com/api/interactions/view/${postId}`, {
-      method: "POST",
-    })
-      .then((res) => res.json())
-      .then(({ views }) => {
-        setStats((prev) => ({ ...prev, [postId]: { ...prev[postId], views } }));
-      })
-      .catch((err) => {
-        console.error("Error increasing views:", err);
-      });
+    setStats((prev) => ({
+      ...prev,
+      [postId]: {
+        ...prev[postId],
+        views: (prev[postId]?.views || 0) + 1
+      }
+    }));
   };
 
-  const handleLike = async (postId) => {
-    try {
-      const res = await fetch(`https://onepointnews-server.onrender.com/api/interactions/like/${postId}`, {
-        method: "POST",
-      });
-      const { likes } = await res.json();
-      setStats((prev) => ({ ...prev, [postId]: { ...prev[postId], likes } }));
-    } catch (err) {
-      console.error("Error increasing likes:", err);
-    }
+  const handleLike = (postId) => {
+    // Toggle liked state
+    const wasLiked = likedPosts[postId];
+    const updatedLikedPosts = { 
+      ...likedPosts, 
+      [postId]: !wasLiked 
+    };
+    setLikedPosts(updatedLikedPosts);
+    localStorage.setItem('likedPosts', JSON.stringify(updatedLikedPosts));
+
+    // Update stats - increment or decrement likes
+    setStats((prev) => ({
+      ...prev,
+      [postId]: {
+        ...prev[postId],
+        likes: (prev[postId]?.likes || 0) + (wasLiked ? 1 : -1)
+      }
+    }));
   };
 
   return (
@@ -95,8 +96,15 @@ const NewsFeed = ({ selectedCategory }) => {
 
                 <div className="flex items-center text-sm text-[var(--color-text-secondary)] gap-6">
                   <div className="flex items-center gap-1">👁️ {postStats.views}</div>
-                  <button onClick={() => handleLike(post._id)}>
-                    <div className="flex items-center gap-1">❤️ {postStats.likes}</div>
+                  <button 
+                    onClick={() => handleLike(post._id)}
+                    className={`flex items-center gap-1 transition-colors ${
+                      likedPosts[post._id] 
+                        ? 'text-red-500' 
+                        : 'hover:text-red-500 cursor-pointer'
+                    }`}
+                  >
+                    {likedPosts[post._id] ? '❤️' : '🤍'} {postStats.likes}
                   </button>
                   <a href={post.url} target="_blank" rel="noreferrer" className="ml-auto">🔗</a>
                 </div>
