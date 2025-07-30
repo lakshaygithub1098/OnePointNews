@@ -27,8 +27,8 @@ const Sidebar = () => {
 
   return (
     <aside
-      className="w-64 h-[calc(100vh-4rem)] sticky top-16 bg-[var(--color-background)] text-[var(--color-text-primary)] border-r border-[var(--color-border)] p-4 flex flex-col justify-between transition-colors duration-300 shadow-sm"
-    >
+      className="hidden md:block w-64 h-[calc(100vh-4rem)] sticky top-16 bg-[var(--color-background)] text-[var(--color-text-primary)] border-r border-[var(--color-border)] p-4 flex-col justify-between transition-colors duration-300 shadow-sm"
+>
       <div>
         {/* Search */}
         <div className="relative mb-6">
