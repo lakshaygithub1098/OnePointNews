@@ -8,7 +8,6 @@ const NewsCarousel = () => {
   const timeout = useRef();
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  
   const [sliderRef, instanceRef] = useKeenSlider(
     {
       loop: true,
@@ -23,7 +22,6 @@ const NewsCarousel = () => {
     []
   );
 
-  
   useEffect(() => {
     if (!instanceRef.current || carouselItems.length === 0) return;
 
@@ -47,9 +45,9 @@ const NewsCarousel = () => {
     return () => clearNextTimeout();
   }, [carouselItems, instanceRef]);
 
-  
+  // ✅ Updated API endpoint here
   useEffect(() => {
-    fetch("http://localhost:5000/api/news")
+    fetch("https://onepointnews-server.onrender.com/api/news")
       .then((res) => res.json())
       .then((data) => {
         setCarouselItems(data.carousel || []);
@@ -57,14 +55,13 @@ const NewsCarousel = () => {
       .catch((err) => console.error("Carousel fetch error:", err));
   }, []);
 
-
+  // ✅ Updated view endpoint here
   const handleView = (postId) => {
-    fetch(`http://localhost:5000/api/interactions/view/${postId}`, {
+    fetch(`https://onepointnews-server.onrender.com/api/interactions/view/${postId}`, {
       method: "POST",
     }).catch(() => {});
   };
 
-    
   if (carouselItems.length === 0) return null;
 
   return (
@@ -108,6 +105,7 @@ const NewsCarousel = () => {
           </a>
         ))}
       </div>
+
       {/* Navigation Buttons */}
       <button
         aria-label="Previous slide"
