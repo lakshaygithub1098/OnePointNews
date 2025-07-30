@@ -3,8 +3,6 @@ import { useKeenSlider } from "keen-slider/react";
 import "keen-slider/keen-slider.min.css";
 import { Clock, Eye, ChevronLeft, ChevronRight } from "lucide-react";
 
-const BASE_URL = "https://onepointnews-server.onrender.com";
-
 const NewsCarousel = () => {
   const [carouselItems, setCarouselItems] = useState([]);
   const timeout = useRef();
@@ -37,7 +35,7 @@ const NewsCarousel = () => {
       timeout.current = setTimeout(() => {
         slider.next();
         nextTimeout();
-      }, 4000);
+      }, 4000); 
     };
 
     slider.on("created", nextTimeout);
@@ -48,7 +46,7 @@ const NewsCarousel = () => {
   }, [carouselItems, instanceRef]);
 
   useEffect(() => {
-    fetch(`${BASE_URL}/api/news`)
+    fetch("https://your-deployment-url.onrender.com/api/news")
       .then((res) => res.json())
       .then((data) => {
         setCarouselItems(data.carousel || []);
@@ -57,7 +55,7 @@ const NewsCarousel = () => {
   }, []);
 
   const handleView = (postId) => {
-    fetch(`${BASE_URL}/api/interactions/view/${postId}`, {
+    fetch(`https://your-deployment-url.onrender.com/api/interactions/view/${postId}`, {
       method: "POST",
     }).catch(() => {});
   };
@@ -105,8 +103,6 @@ const NewsCarousel = () => {
           </a>
         ))}
       </div>
-
-      {/* Navigation Buttons */}
       <button
         aria-label="Previous slide"
         className="absolute top-1/2 left-2 -translate-y-1/2 bg-[var(--color-background)]/80 hover:bg-[var(--color-surface)] rounded-full p-2 shadow border border-[var(--color-border)] z-10"
