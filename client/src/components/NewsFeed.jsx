@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 
-
 const NewsFeed = ({ selectedCategory }) => {
   const [newsPosts, setNewsFeed] = useState([]);
   const [likedPosts, setLikedPosts] = useState(() => {
@@ -12,7 +11,8 @@ const NewsFeed = ({ selectedCategory }) => {
   useEffect(() => {
     if (!selectedCategory) return;
 
-    fetch(`http://localhost:5000/api/news/${selectedCategory}`)
+    // ✅ Updated backend URL here
+    fetch(`https://onepointnews-server.onrender.com/api/news/${selectedCategory}`)
       .then((res) => res.json())
       .then((data) => {
         setNewsFeed(data);
@@ -22,7 +22,7 @@ const NewsFeed = ({ selectedCategory }) => {
         data.forEach((post) => {
           initialStats[post._id] = {
             likes: likedPosts[post._id] ? 1 : 0,
-            views: 0, // optional
+            views: 0,
           };
         });
         setStats(initialStats);
