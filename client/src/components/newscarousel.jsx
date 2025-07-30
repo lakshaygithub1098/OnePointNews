@@ -35,7 +35,7 @@ const NewsCarousel = () => {
       timeout.current = setTimeout(() => {
         slider.next();
         nextTimeout();
-      }, 4000); 
+      }, 10000); 
     };
 
     slider.on("created", nextTimeout);
