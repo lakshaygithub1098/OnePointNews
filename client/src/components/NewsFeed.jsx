@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 
+
 const NewsFeed = ({ selectedCategory }) => {
   const [newsPosts, setNewsFeed] = useState([]);
   const [likedPosts, setLikedPosts] = useState(() => {
