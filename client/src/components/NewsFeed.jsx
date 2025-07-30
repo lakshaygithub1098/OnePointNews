@@ -11,17 +11,22 @@ const NewsFeed = ({ selectedCategory }) => {
   useEffect(() => {
     if (!selectedCategory) return;
 
-    // ✅ Updated backend URL here
     fetch(`https://onepointnews-server.onrender.com/api/news/${selectedCategory}`)
       .then((res) => res.json())
       .then((data) => {
+        if (!Array.isArray(data)) {
+          console.error("News data is not an array:", data);
+          setNewsFeed([]);
+          return;
+        }
+
         setNewsFeed(data);
 
-        // Initialize stats with default likes = 0
         const initialStats = {};
         data.forEach((post) => {
+          const isLiked = likedPosts[post._id] ?? true; // default like = true
           initialStats[post._id] = {
-            likes: likedPosts[post._id] ? 1 : 0,
+            likes: isLiked ? 1 : 0,
             views: 0,
           };
         });
@@ -30,7 +35,7 @@ const NewsFeed = ({ selectedCategory }) => {
   }, [selectedCategory]);
 
   const handleLike = (postId) => {
-    const wasLiked = likedPosts[postId];
+    const wasLiked = likedPosts[postId] ?? true; // default = true
     const updatedLikedPosts = {
       ...likedPosts,
       [postId]: !wasLiked,
@@ -50,7 +55,7 @@ const NewsFeed = ({ selectedCategory }) => {
   return (
     <div className="news-feed">
       {newsPosts.map((post) => {
-        const postStats = stats[post._id] || { likes: 0, views: 0 };
+        const postStats = stats[post._id] || { likes: 1, views: 0 };
 
         return (
           <div key={post._id} className="news-post p-4 border-b">
@@ -60,12 +65,12 @@ const NewsFeed = ({ selectedCategory }) => {
             <button
               onClick={() => handleLike(post._id)}
               className={`flex items-center gap-1 mt-2 transition-colors ${
-                likedPosts[post._id]
+                likedPosts[post._id] ?? true
                   ? "text-red-500"
                   : "hover:text-red-500 cursor-pointer"
               }`}
             >
-              {likedPosts[post._id] ? "❤️" : "🤍"} {postStats.likes}
+              {(likedPosts[post._id] ?? true) ? "❤️" : "🤍"} {postStats.likes}
             </button>
           </div>
         );
